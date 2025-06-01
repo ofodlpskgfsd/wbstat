@@ -14,27 +14,28 @@
   <cardsMoney/>
   <tabCompetitors/>
   <TabSale/>
-  <reviews/>
+  <PriceCard/>
   <accordion/>
   <Footer/>
   <auto/>
 </template>
 
 <script>
-import Header from "../components/Header.vue";
+import Header from "../components/layout/Header.vue";
 import TabCompetitors from "../components/TabCompetitors.vue";
 import CardsStage from "../components/CardsStage.vue";
 import CardsMoney from "../components/CardsPlusesService.vue";
 import { vAutoAnimate } from '@formkit/auto-animate';
 import TabSale from "../components/TabSale.vue";
 import accordion from "../components/accordion.vue";
-import Footer from "../components/Footer.vue";
+import Footer from "../components/layout/Footer.vue";
 import Reviews from "../components/Reviews.vue";
-import auto from "../components/auto.vue"
+import auto from "../components/functional/auto.vue"
+import PriceCard from "../components/PriceCard.vue";
 
 export default {
 
-  components: {Reviews, TabCompetitors, CardsMoney, CardsStage, TabSale, accordion, Footer, Header, auto}
+  components: { TabCompetitors, CardsMoney, CardsStage, TabSale, accordion, Footer, Header, auto, PriceCard}
 }
 </script>
 

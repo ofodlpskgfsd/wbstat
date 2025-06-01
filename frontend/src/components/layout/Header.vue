@@ -1,25 +1,22 @@
 <template>
   <header class="container">
     <div class="logo">
-      <router-link to="/"><img src="../assets/logo.png" alt="Логотип" /></router-link>
+      <router-link to="/"><img src="../../assets/logo.png" alt="Логотип" /></router-link>
     </div>
 
-    <!-- Бургер-кнопка -->
     <div class="burger" @click="toggleMenu">
       <span :class="{ 'active': menuOpen }"></span>
       <span :class="{ 'active': menuOpen }"></span>
       <span :class="{ 'active': menuOpen }"></span>
     </div>
 
-    <!-- Затемнение фона -->
     <div v-if="menuOpen" class="overlay" @click="toggleMenu"></div>
 
-    <!-- Меню -->
     <nav class="menu" :class="{ 'active': menuOpen }">
       <ul>
         <li><router-link to="/AdditionalTools" @click="closeMenu">Доп. инструменты</router-link></li>
-        <li><router-link to="/about" @click="closeMenu">Контакты</router-link></li>
-        <li><router-link to="/contact" @click="closeMenu">О нас</router-link></li>
+        <li><router-link to="/AdditionalTools" @click="closeMenu">Контакты</router-link></li>
+        <li><router-link to="/AdditionalTools" @click="closeMenu">О нас</router-link></li>
       </ul>
       <div class="auth-buttons">
         <router-link to="/login" class="button" @click="closeMenu">Войти</router-link>

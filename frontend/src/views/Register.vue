@@ -1,7 +1,7 @@
 <template>
   <Header />
   <div class="registration-container">
-    <div class="registration-form">
+    <div class="registration-form" ref="formContainer">
       <h2 class="up_text">Регистрация</h2>
       <form @submit.prevent="register" v-auto-animate>
         <input type="text" v-model="form.name" @blur="validateField('name')" placeholder="Имя" required />
@@ -10,6 +10,9 @@
         <input type="email" v-model="form.email" @blur="validateField('email')" placeholder="Email" required />
         <span v-if="errors.email" class="error">{{ errors.email }}</span>
         <span v-if="serverErrorEmail" class="error">{{ serverErrorEmail }}</span>
+
+        <input type="text" v-model="form.apiKey" @blur="validateField('apiKey')" placeholder="API-ключ WB" required />
+        <span v-if="errors.apiKey" class="error">{{ errors.apiKey }}</span>
 
         <input type="tel" v-model="form.phone" v-mask="'+7##########'" @blur="validateField('phone')" placeholder="Номер телефона" required />
         <span v-if="errors.phone" class="error">{{ errors.phone }}</span>
@@ -29,7 +32,6 @@
         </div>
       </form>
 
-      <!-- Современное приветственное сообщение -->
       <transition name="fade">
         <div v-if="welcomeMessage" class="welcome-message">
           <p>🚀 Добро пожаловать, <span class="highlight">{{ form.name }}</span>!</p>
@@ -43,7 +45,8 @@
 <script>
 import { vAutoAnimate } from '@formkit/auto-animate';
 import axios from 'axios';
-import Header from '../components/Header.vue';
+import Header from '../components/layout/Header.vue';
+import { gsap } from 'gsap';
 
 export default {
   components: { Header },
@@ -55,6 +58,7 @@ export default {
         phone: '',
         password: '',
         confirmPassword: '',
+        apiKey: ''
       },
       errors: {
         name: '',
@@ -62,10 +66,18 @@ export default {
         phone: '',
         password: '',
         confirmPassword: '',
+        apiKey: ''
       },
       serverErrorEmail: '',
       welcomeMessage: '',
     };
+  },
+  mounted() {
+    gsap.fromTo(
+        this.$refs.formContainer,
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+    );
   },
   methods: {
     validateField(field) {
@@ -75,13 +87,11 @@ export default {
         this.errors.phone = 'Введите корректный номер телефона';
       } else if (field === 'password') {
         const strengthError = this.checkPasswordStrength(this.form.password);
-        if (strengthError) {
-          this.errors.password = strengthError;
-        } else {
-          this.errors.password = '';
-        }
+        this.errors.password = strengthError || '';
       } else if (field === 'confirmPassword' && this.form.confirmPassword !== this.form.password) {
         this.errors.confirmPassword = 'Пароли не совпадают!';
+      } else if (field === 'apiKey' && this.form.apiKey.trim().length < 10) {
+        this.errors.apiKey = 'Введите корректный API-ключ';
       } else if (!this.form[field]) {
         this.errors[field] = 'Заполните поле';
       } else {
@@ -90,34 +100,18 @@ export default {
     },
 
     checkPasswordStrength(password) {
-      if (password.length < 8) {
-        return 'Пароль должен быть не менее 8 символов';
-      }
-      if (!/[A-Z]/.test(password)) {
-        return 'Пароль должен содержать хотя бы одну заглавную букву';
-      }
-      if (!/[a-z]/.test(password)) {
-        return 'Пароль должен содержать хотя бы одну строчную букву';
-      }
-      if (!/[0-9]/.test(password)) {
-        return 'Пароль должен содержать хотя бы одну цифру';
-      }
-      if (!/[\W_]/.test(password)) {
-        return 'Пароль должен содержать хотя бы один специальный символ';
-      }
+      if (password.length < 8) return 'Пароль должен быть не менее 8 символов';
+      if (!/[A-Z]/.test(password)) return 'Пароль должен содержать хотя бы одну заглавную букву';
+      if (!/[a-z]/.test(password)) return 'Пароль должен содержать хотя бы одну строчную букву';
+      if (!/[0-9]/.test(password)) return 'Пароль должен содержать хотя бы одну цифру';
+      if (!/[\W_]/.test(password)) return 'Пароль должен содержать хотя бы один специальный символ';
       return '';
     },
 
     async register() {
-      this.validateField('name');
-      this.validateField('email');
-      this.validateField('phone');
-      this.validateField('password');
-      this.validateField('confirmPassword');
+      ['name', 'email', 'phone', 'password', 'confirmPassword', 'apiKey'].forEach(this.validateField);
 
-      if (Object.values(this.errors).some(error => error !== '')) {
-        return;
-      }
+      if (Object.values(this.errors).some(error => error !== '')) return;
 
       try {
         const response = await axios.post('http://localhost:3000/api/registration', {
@@ -125,36 +119,33 @@ export default {
           email: this.form.email,
           phone: this.form.phone,
           password: this.form.password,
-          confirmPassword: this.form.confirmPassword
+          confirmPassword: this.form.confirmPassword,
+          apiKey: this.form.apiKey
         });
 
         if (response.data.token) {
           this.serverErrorEmail = '';
           this.welcomeMessage = true;
 
-          // Скрыть приветствие через 3 секунды
           setTimeout(() => {
             this.welcomeMessage = false;
             this.$router.push('/login');
           }, 3000);
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          if (error.response.data.message === 'Пользователь с таким email уже существует') {
-            this.serverErrorEmail = error.response.data.message;
-          } else {
-            this.serverErrorEmail = 'Что-то пошло не так, попробуйте снова.';
-          }
+        if (error.response && error.response.data?.message === 'Пользователь с таким email уже существует') {
+          this.serverErrorEmail = error.response.data.message;
         } else {
-          this.serverErrorEmail = 'Ошибка соединения с сервером.';
+          this.serverErrorEmail = 'Ошибка на сервере, попробуйте позже.';
         }
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>
+/* ...оставим стиль как был */
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s ease-in-out;
 }

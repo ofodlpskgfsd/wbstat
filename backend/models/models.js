@@ -32,7 +32,12 @@ const User = sequelize.define('users', {
         type: DataTypes.STRING,
         unique: true,
         allowNull: true
+    },
+    banned: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
+
 })
 
 module.exports = {

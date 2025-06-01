@@ -1,10 +1,10 @@
-// src/stores/userStore.js
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
         user: null,
+        apiKey: '',          // <--- добавьте сюда
         token: localStorage.getItem('authToken') || '',
         loading: false,
         error: '',

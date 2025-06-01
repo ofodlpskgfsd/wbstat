@@ -24,7 +24,7 @@ app.use((err, req, res, next) => {
     return res.status(500).json({ message: 'Что-то пошло не так!' });
 });
 
-app.listen(3002, () => {
+app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });
 
@@ -33,12 +33,9 @@ const start = async () => {
     try {
         await sequelize.authenticate()
         await sequelize.sync()
-        app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
     } catch (e) {
         console.log(e)
     }
 }
-
-
 
 start()

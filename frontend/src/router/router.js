@@ -6,6 +6,9 @@ import Login from "../views/Login.vue";
 import HomePage from '../views/HomePage.vue';
 import Profile from '../views/ProfilePage.vue';
 import AdditionalTools from '../components/AdditionalTools.vue';
+import security from "../components/functional/security.vue";
+import card from '../components/card.vue';
+import pricing_plan from '../components/pricing_plan.vue';
 
 const routes = [
     {
@@ -36,6 +39,19 @@ const routes = [
         path: '/AdditionalTools',
         component: AdditionalTools,
     },
+    {
+        path: '/security',
+        component: security,
+    },
+    {
+        path: '/card',
+        component: card,
+    },
+    {
+        path: '/pricing_plan',
+        name: 'pricing_plan',
+        component: pricing_plan,
+    },
 ];
 
 const router = createRouter({
@@ -43,17 +59,17 @@ const router = createRouter({
     routes,
 });
 
-// Глобальный навигационный охранник
 router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth) {
         if (!localStorage.getItem('authToken')) {
-            next({ path: '/login' });  // Перенаправление на логин
+            next({ path: '/login' });
         } else {
-            next();  // Разрешаем доступ к маршруту
+            next();
         }
     } else {
-        next();  // Для всех остальных маршрутов доступ открыт
+        next();
     }
 });
+
 
 export default router;

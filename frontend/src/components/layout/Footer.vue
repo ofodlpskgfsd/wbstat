@@ -1,7 +1,6 @@
 <template>
   <footer class="footer">
     <div class="footer-container">
-      <!-- Левая часть -->
       <div class="footer-left">
         <h2 class="footer-title">WBSTAT</h2>
         <p class="footer-description">
@@ -9,7 +8,6 @@
         </p>
       </div>
 
-      <!-- Центральная часть -->
       <div class="footer-center">
         <h3>Навигация</h3>
         <ul>
@@ -20,7 +18,6 @@
         </ul>
       </div>
 
-      <!-- Правая часть -->
       <div class="footer-right">
         <h3>Контакты</h3>
         <ul>
